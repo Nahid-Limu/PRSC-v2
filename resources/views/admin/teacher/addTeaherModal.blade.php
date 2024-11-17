@@ -31,8 +31,11 @@
 
                 <div class="col-12">
                     <label for="image" class="form-label">Photo</label>
+                    {{-- Preview an image before  --}}
+                      <img src="assets/img/imagePlaceholder.jpg" class="w-50" style="padding-bottom: 18px; width: 266px; height: 190px;" id="imgPreview">
+                    {{-- Preview an image before  --}}
                     <input type="file" class="form-control" name="image" id="image" required>
-                  </div>
+                </div>
 
                 <div class="text-center">
                   <button type="button" onclick="addData()" class="btn btn-outline-success btn-sm">Add</button>

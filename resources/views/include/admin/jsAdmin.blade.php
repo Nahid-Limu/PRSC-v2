@@ -37,6 +37,7 @@
       $("#form_result").text('');
       $('#'+fromName).trigger("reset");
       $(".summerNote").summernote('reset');
+      $("#imgPreview").attr('src', 'assets/img/imagePlaceholder.jpg');   
     }
 
     //summernote
