@@ -17,7 +17,7 @@
     <!-- ======= Admission Section ======= -->
     <div class="site-section">
         <div class="container">
-            <div class="row mb-5" data-aos="fade-right">
+            <div class="row mb-5">
                 <div class="col-lg-6 mb-lg-0 mb-4">
                     <img src="assets/img/school_admission.jpg" alt="Image" class="img-fluid"> 
                 </div>
@@ -40,7 +40,7 @@
                 </div>
             </div>
 
-            <div class="row" data-aos="fade-left">
+            <div class="row">
                 <div class="col-lg-6 order-1 order-lg-2 mb-4 mb-lg-0">
                     <img src="assets/img/transferees_from.jpg" alt="Image" class="img-fluid"> 
                 </div>
@@ -61,7 +61,7 @@
                 </div>
             </div>
 
-            <div class="row mb-5" data-aos="fade-right">
+            <div class="row mb-5">
                 <div class="col-lg-6 mb-lg-0 mb-4">
                     <img src="assets/img/collage_admission.jpg" alt="Image" class="img-fluid"> 
                 </div>
@@ -84,7 +84,7 @@
                 </div>
             </div>
 
-            <div class="row" data-aos="flip-up">
+            <div class="row">
                 <div class="col-lg-6 pt-4 pt-lg-0 order-2 order-lg-1 content">
                     <h3>ভর্তি:</h3>
                     <p class="fst-italic">
