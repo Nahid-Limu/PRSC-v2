@@ -34,12 +34,12 @@
                 
                 <div class="col-md-6">
                   <label for="image" class="form-label">Photo</label>
-                  <input type="file" class="form-control" name="image" id="edit_image">
+                  <input type="file" class="form-control uplodeImage" name="image" id="edit_image">
                 </div>
                 
                 <div class="col-md-6">
                   <div class="text-center">
-                    <img src="" class='img-fluid' id="imageView" style='widows: 70px; height: 70px;'>
+                    <img src="" class='img-fluid imgPreview' id="imageView" style='widows: 70px; height: 70px;'>
                   </div>
                 </div>
 

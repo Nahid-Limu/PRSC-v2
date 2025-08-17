@@ -115,60 +115,46 @@ class TeacherController extends Controller
         $Teacher = Teacher::find($id);
         return response()->json($Teacher);
     }
-
+    
+    // Update data
     public function teacherUpdate(Request $request)
     {
         // dd($request->all());
+
+        // Find the record by id
+        $Teacher = Teacher::find($request->id);
+
+        // Update text fields
+        $Teacher->name = $request->name;
+        $Teacher->designation = $request->designation;
+        $Teacher->teachers_words =$request->teachers_words;
+
+        // Check if an image file is uploaded
         if ($request->hasFile('image')) {
 
-            $Teacher = Teacher::find($request->id);
-            
-            $image=$Teacher->image;
-
-            if($image!=null){
-                $path = public_path('assets/img/teachers/' . $image);
-                if (file_exists($path)) {
-                    unlink($path);
-                }
+            // Delete old image if exists
+            if ($Teacher->image && file_exists(public_path('assets/img/teachers/' . $Teacher->image) ) ) {
+                unlink(public_path('assets/img/teachers/' . $Teacher->image));
             }
-            
-            // $Teacher->name = ucwords($request->name);
-            // $Teacher->designation = ucwords($request->designation);
-            $Teacher->name = $request->name;
-            $Teacher->designation = $request->designation;
-            $Teacher->teachers_words =$request->teachers_words;
 
-                $image = $request->file('image');
+            // Store the new image
+            $image = $request->file('image');
+            $filename = $request->name.'.'.$image->getClientOriginalExtension();
+            $path = public_path('assets/img/teachers/' . $filename);
+            Image::make($image->getRealPath())->resize(600, 600)->save($path);
 
-                $filename = $request->name.'.'.$image->getClientOriginalExtension();
-                $path = public_path('assets/img/teachers/' . $filename);
-                Image::make($image->getRealPath())->resize(600, 600)->save($path);
-
+            // Save image name to the database
             $Teacher->image =$filename;
-            $Teacher->save();
-
-            if ($Teacher->id) {
-                return response()->json(['success' => 'Teacher Update successfully.']);
-            } else {
-                return response()->json(['failed' => 'Teacher Update failed.']);
-            }
-
-
-        }else {
-            $Teacher = Teacher::find($request->id);
-            // $Teacher->name = ucwords($request->name);
-            // $Teacher->designation = ucwords($request->designation);
-            $Teacher->name = $request->name;
-            $Teacher->designation = $request->designation;
-            $Teacher->teachers_words =$request->teachers_words;
-            $Teacher->save();
-
-            if ($Teacher->id) {
-                return response()->json(['success' => 'Teacher Update successfully.']);
-            } else {
-                return response()->json(['failed' => 'Teacher Update failed.']);
-            }
-
         }
+
+        // Save updated model
+        $Teacher->save();
+
+        if ($Teacher->id) {
+            return response()->json(['success' => 'Teacher Update successfully.']);
+        } else {
+            return response()->json(['failed' => 'Teacher Update failed.']);
+        }
+
     }
 }
