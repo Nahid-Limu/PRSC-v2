@@ -24,7 +24,7 @@
 
 <!-- JS FUNCTIONS -->
 <script>
-    //call deleteModal
+    //--call deleteModal
     function deleteModal(Id,Name,List) {
       // alert(List);
       $("#data").text('[ '+Name+' ]');
@@ -32,36 +32,40 @@
       $("#listName").text('[ '+List+' ]');
     }
     
-    //reset form
+    //--reset form
     function onCloseModal(fromName) {
       $("#form_result").text('');
       $('#'+fromName).trigger("reset");
       $(".summerNote").summernote('reset');
       $("#imgPreview").attr('src', 'assets/img/imagePlaceholder.jpg');   
+      $('.imgPreview').attr('hidden', true);
     }
 
-    //summernote
+    //--summernote
     $(document).ready(function() {
       $(".summerNote").summernote({
         height: 300,   //don't use px
       });
     });
 
-    //ajax flash msg 
+    //--ajax flash msg 
     function SuccessMsg() {
       $("#success_message").fadeTo(3000, 500).slideUp(500, function(){
           $("#success_message").alert('close');
       });
     }
 
-    //flash msg php form submit
+    //--flash msg php form submit
     setTimeout(function() {
       $('#successMessage').fadeOut('fast');
     }, 3000);
 
-    //Preview an image before Uplode
+    //--Preview an image before Uplode
     $('.uplodeImage').change(function() {
       if (this.files && this.files[0]) {
+
+        //remove hidden from imgPreview section  
+        $('.imgPreview').removeAttr('hidden');
 
           var reader = new FileReader();
 
