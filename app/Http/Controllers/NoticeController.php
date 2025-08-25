@@ -15,7 +15,7 @@ class NoticeController extends Controller
     public function noticeList()
     {
         
-        $Notice = Notice::all(['id','title','pulish_date','description','document']);
+        $Notice = Notice::orderBy('pulish_date', 'desc')->get(['id','title','pulish_date','description','document']);
         // dd($Notice);
         if(request()->ajax())
         {
@@ -56,46 +56,37 @@ class NoticeController extends Controller
     {
         // dd($request->all());
         //validation [start]
-        $rules = array(
-            'title'    =>  'required',
-            'pulish_date'    =>  'required',
-            'description'     =>  'required',
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'pulish_date' => 'required|date',
+            'description' => 'nullable|string',
             'document' => 'required|file|mimes:ppt,pptx,doc,docx,pdf,xls,xlsx|max:204800',
-        );
+        ]);
 
-        $error = Validator::make($request->all(), $rules);
-        // dd($error);
-        if($error->fails())
+        if($validator->fails())
         {
-            return response()->json(['errors' => $error->errors()->all()]);
+            return response()->json(['errors' => $validator->errors()->all()]);
         }
         //validation [end]
 
+        $data = $request->all();
+
+        //document uplode [start]
         if ($request->hasFile('document')) {
             
-            $Notice = new Notice;
+            $document = $request->file('document');
 
-            // $Notice->title = ucwords($request->title);
-            $Notice->title = $request->title;
-            $Notice->pulish_date =$request->pulish_date;
-            $Notice->description =$request->description;
+            $filename = $request->title.'.'.$document->getClientOriginalExtension();
+            $document->move(public_path().'/assets/file/notice/', $filename);  
 
-                $document = $request->file('document');
-
-                $filename = $request->title.'.'.$document->getClientOriginalExtension();
-                $document->move(public_path().'/assets/file/notice/', $filename);  
-
-            $Notice->document =$filename;
-            $Notice->save();
-
-            if ($Notice->id) {
-                return response()->json(['success' => 'Notice Added successfully.']);
-            } else {
-                return response()->json(['failed' => 'Notice Added failed.']);
-            }
-
-
+            $data['document'] = $filename;
         }
+        //document uplode [end]
+
+        Notice::create($data);
+
+        return response()->json(['success' => 'Notice Added successfully.']);
+
     }
 
     // Delete Data Function 
@@ -130,54 +121,37 @@ class NoticeController extends Controller
     // Update Data Function 
     public function noticeUpdate(Request $request)
     {
+
         // dd($request->all());
+        $data = $request->all();
+
+        $Notice = Notice::find($request->id);
+        
+        // Check if an image file is uploaded [start]
         if ($request->hasFile('document')) {
 
-            $Notice = Notice::find($request->id);
-            
-            $document=$Notice->document;
-
-            if($document!=null){
-                $path = public_path('/assets/file/notice/' . $document);
-                if (file_exists($path)) {
-                    unlink($path);
-                }
-            }
-            
-            // $Notice->title = ucwords($request->title);
-            $Notice->title = $request->title;
-            $Notice->pulish_date =$request->pulish_date;
-            $Notice->description =$request->description;
-
-                $document = $request->file('document');
-
-                $filename = $request->title.'.'.$document->getClientOriginalExtension();
-                $document->move(public_path().'/assets/file/notice/', $filename);  
-
-            $Notice->document =$filename;
-            $Notice->save();
-
-            if ($Notice->id) {
-                return response()->json(['success' => 'Notice Update successfully.']);
-            } else {
-                return response()->json(['failed' => 'Notice Update failed.']);
+            // Delete old document if exists
+            if ($Notice->document && file_exists(public_path('assets/file/notice/' . $Notice->document) ) ) {
+                unlink(public_path('assets/file/notice/' . $Notice->document));
             }
 
+            // Store the new document
+            $document = $request->file('document');
 
-        }else {
-            $Notice = Notice::find($request->id);
-            // $Notice->title = ucwords($request->title);
-            $Notice->title = $request->title;
-            $Notice->pulish_date =$request->pulish_date;
-            $Notice->description =$request->description;
-            $Notice->save();
+            $filename = $request->title.'.'.$document->getClientOriginalExtension();
+            $document->move(public_path().'/assets/file/notice/', $filename);  
 
-            if ($Notice->id) {
-                return response()->json(['success' => 'Notice Update successfully.']);
-            } else {
-                return response()->json(['failed' => 'Notice Update failed.']);
-            }
+            // Save image name to the database
+            $data['document'] = $filename;
+        }
+        // Check if an image file is uploaded [end]
 
+        $Notice->update($data);
+
+        if ($Notice) {
+            return response()->json(['success' => 'Data Update Successfully.']);
+        } else {
+            return response()->json(['failed' => 'Update failed.']);
         }
     }
 }

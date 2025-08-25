@@ -55,6 +55,44 @@ class EventController extends Controller
     {
         // dd($request->all());
         //validation [start]
+        $validator = Validator::make($request->all(), [
+            'title' => 'required|string|max:255',
+            'event_date' => 'required|date',
+            'event_time' => 'required',
+            'description' => 'nullable|string',
+            'image' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        if($validator->fails())
+        {
+            return response()->json(['errors' => $validator->errors()->all()]);
+        }
+        //validation [end]
+
+        $data = $request->all();
+
+        //image uplode [start]
+        if ($request->hasFile('image')) {
+            
+            $image = $request->file('image');
+            
+            $filename = $request->title.'.'.$image->getClientOriginalExtension();
+            $path = public_path('assets/img/events/' . $filename);
+            Image::make($image->getRealPath())->resize(600, 600)->save($path);
+
+            $data['image'] = $filename;
+        }
+        //image uplode [end]
+
+        Event::create($data);
+
+        return response()->json(['success' => 'Event Added successfully.']);
+    }
+
+    public function eventAdd_OLD(Request $request)
+    {
+        // dd($request->all());
+        //validation [start]
         $rules = array(
             'title'    =>  'required',
             'event_date'    =>  'required',
@@ -186,6 +224,44 @@ class EventController extends Controller
     public function eventUpdate(Request $request)
     {
         // dd($request->all());
+        $data = $request->all();
+
+        $Event = Event::find($request->id);
+        
+        // Check if an image file is uploaded [start]
+        if ($request->hasFile('image')) {
+
+            // Delete old image if exists
+            if ($Event->image && file_exists(public_path('assets/img/events/' . $Event->image) ) ) {
+                unlink(public_path('assets/img/events/' . $Event->image));
+            }
+
+            // Store the new image
+            $image = $request->file('image');
+            
+            $filename = $request->title.'.'.$image->getClientOriginalExtension();
+            $path = public_path('assets/img/events/' . $filename);
+            Image::make($image->getRealPath())->resize(600, 600)->save($path);
+
+            
+
+            // Save image name to the database
+            $data['image'] = $filename;
+        }
+        // Check if an image file is uploaded [end]
+
+        $Event->update($data);
+
+        if ($Event) {
+            return response()->json(['success' => 'Data Update Successfully.']);
+        } else {
+            return response()->json(['failed' => 'Update failed.']);
+        }
+    }
+
+    public function eventUpdate_OLD(Request $request)
+    {
+        // dd($request->all());
         // Find the record by id
         $Event = Event::find($request->id);
 
@@ -195,7 +271,7 @@ class EventController extends Controller
         $Event->event_time =$request->event_time;
         $Event->description =$request->description;
 
-        // Check if an image file is uploaded
+        // Check if an image file is uploaded [start]
         if ($request->hasFile('image')) {
 
             // Delete old image if exists
@@ -212,6 +288,7 @@ class EventController extends Controller
             // Save image name to the database
             $Event->image =$filename;
         }
+        // Check if an image file is uploaded [end]
 
         // Save updated model
         $Event->save();
